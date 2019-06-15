@@ -14,6 +14,8 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -26,7 +28,7 @@ public class EnversRevisionMetadata<O extends Serializable> implements RevisionM
 
 	private final EnversRevisionEntity<O> entity;
     private final Lazy<Optional<Integer>> revisionNumber;
-    private final Lazy<Optional<LocalDateTime>> revisionDate;
+	private final Lazy<Optional<Object>> revisionDate;
 
 	/**
 	 * Creates a new {@link EnversRevisionMetadata}.
@@ -50,18 +52,14 @@ public class EnversRevisionMetadata<O extends Serializable> implements RevisionM
 		return revisionNumber.get();
 	}
 
-	/**
-	 * (non-Javadoc)
-	 * @see org.springframework.data.history.RevisionMetadata#getRevisionDate()
-	 */
 	@Override
 	public Optional<LocalDateTime> getRevisionDate() {
-		return revisionDate.get();
+		return revisionDate.get().map(EnversRevisionMetadata::convertToLocalDateTime);
 	}
 
 	@Override
 	public Optional<Instant> getRevisionInstant() {
-		return Optional.empty();
+		return revisionDate.get().map(EnversRevisionMetadata::convertToInstant);
 	}
 
 	public O getOperatorId() {
@@ -90,5 +88,35 @@ public class EnversRevisionMetadata<O extends Serializable> implements RevisionM
 			ReflectionUtils.doWithFields(entity.getClass(), callback);
 			return Optional.ofNullable(callback.getValue(entity));
 		});
+	}
+
+	private static LocalDateTime convertToLocalDateTime(Object timestamp) {
+
+		if (timestamp instanceof LocalDateTime) {
+			return (LocalDateTime) timestamp;
+		}
+
+		return LocalDateTime.ofInstant(convertToInstant(timestamp), ZoneOffset.systemDefault());
+	}
+
+	private static Instant convertToInstant(Object timestamp) {
+
+		if (timestamp instanceof Instant) {
+			return (Instant) timestamp;
+		}
+
+		if (timestamp instanceof LocalDateTime) {
+			return ((LocalDateTime) timestamp).atZone(ZoneOffset.systemDefault()).toInstant();
+		}
+
+		if (timestamp instanceof Long) {
+			return Instant.ofEpochMilli((Long) timestamp);
+		}
+
+		if (Date.class.isInstance(timestamp)) {
+			return Date.class.cast(timestamp).toInstant();
+		}
+
+		throw new IllegalArgumentException(String.format("Can't convert %s to Instant!", timestamp));
 	}
 }

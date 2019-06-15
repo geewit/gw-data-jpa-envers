@@ -3,6 +3,7 @@ package io.geewit.data.jpa.envers.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 /**
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
  * @since  2017-05-26
  */
 public class ComparedRevision<T, O> implements Serializable {
-    public ComparedRevision(T current, T previous, LocalDateTime updateTime, O operatorId, String operatorName) {
+    public ComparedRevision(T current, T previous, Instant updateTime, O operatorId, String operatorName) {
         this.current = current;
         this.previous = previous;
         this.updateTime = updateTime;
@@ -24,7 +25,7 @@ public class ComparedRevision<T, O> implements Serializable {
     private T previous;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08")
-    private LocalDateTime updateTime;
+    private Instant updateTime;
 
     private O operatorId;
 
@@ -51,12 +52,12 @@ public class ComparedRevision<T, O> implements Serializable {
     }
 
     @SuppressWarnings({"unused"})
-    public LocalDateTime getUpdateTime() {
+    public Instant getUpdateTime() {
         return updateTime;
     }
 
     @SuppressWarnings({"unused"})
-    public void setUpdateTime(LocalDateTime updateTime) {
+    public void setUpdateTime(Instant updateTime) {
         this.updateTime = updateTime;
     }
 

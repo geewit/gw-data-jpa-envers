@@ -1,7 +1,7 @@
 package io.geewit.data.jpa.envers.repository.impl;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -237,9 +237,9 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
             }
             current = reader.find(type, id, revisionNumbers.get(i));
             EnversRevisionMetadata<O> metadata = (EnversRevisionMetadata<O>) getRevisionMetadata(revisionEntities.get(revisionNumbers.get(i)));
-            LocalDateTime updateJodaTime;
-            if(metadata.getRevisionDate().isPresent()) {
-                updateJodaTime = metadata.getRevisionDate().get();
+            Instant updateJodaTime;
+            if(metadata.getRevisionInstant().isPresent()) {
+                updateJodaTime = metadata.getRevisionInstant().get();
             } else {
                 updateJodaTime = null;
             }
