@@ -11,7 +11,6 @@ import io.geewit.data.jpa.envers.EnversRevisionEntity;
 import io.geewit.data.jpa.envers.domain.ComparedRevision;
 import io.geewit.data.jpa.envers.repository.EnversRevisionMetadata;
 import io.geewit.data.jpa.envers.repository.EnversRevisionRepository;
-import com.google.common.collect.Sets;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.springframework.data.domain.Page;
@@ -198,7 +197,7 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
         Class<T> type = entityInformation.getJavaType();
         Map<Integer, T> revisions = new HashMap<>(revisionNumbers.size());
         Class<T> revisionEntityClass = (Class<T>) revisionEntityInformation.getRevisionEntityClass();
-        Map<Number, T> revisionEntities = reader.findRevisions(revisionEntityClass, Sets.newHashSet(revisionNumbers));
+        Map<Number, T> revisionEntities = reader.findRevisions(revisionEntityClass, new HashSet<>(revisionNumbers));
 
         for (Integer number : revisionNumbers) {
             revisions.put(number, reader.find(type, id, number));

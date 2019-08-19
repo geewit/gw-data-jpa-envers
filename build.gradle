@@ -16,6 +16,4 @@ dependencies {
     compile("org.springframework:spring-tx:$spring_version")
     compile("org.springframework.data:spring-data-commons:$spring_data_version")
     compile("org.springframework.data:spring-data-jpa:$spring_data_version")
-
-    compile("io.geewit.core:gw-core-utils:$gw_core_utils_version")
 }
