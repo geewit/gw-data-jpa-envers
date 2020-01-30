@@ -53,11 +53,6 @@ public class EnversRevisionMetadata<O extends Serializable> implements RevisionM
 	}
 
 	@Override
-	public Optional<LocalDateTime> getRevisionDate() {
-		return revisionDate.get().map(EnversRevisionMetadata::convertToLocalDateTime);
-	}
-
-	@Override
 	public Optional<Instant> getRevisionInstant() {
 		return revisionDate.get().map(EnversRevisionMetadata::convertToInstant);
 	}
@@ -66,7 +61,6 @@ public class EnversRevisionMetadata<O extends Serializable> implements RevisionM
 		return entity.getOperatorId();
 	}
 
-	@SuppressWarnings("unchecked")
 	public String getOperatorName() {
 		return entity.getOperatorName();
 	}
@@ -90,15 +84,6 @@ public class EnversRevisionMetadata<O extends Serializable> implements RevisionM
 		});
 	}
 
-	private static LocalDateTime convertToLocalDateTime(Object timestamp) {
-
-		if (timestamp instanceof LocalDateTime) {
-			return (LocalDateTime) timestamp;
-		}
-
-		return LocalDateTime.ofInstant(convertToInstant(timestamp), ZoneOffset.systemDefault());
-	}
-
 	private static Instant convertToInstant(Object timestamp) {
 
 		if (timestamp instanceof Instant) {
@@ -113,8 +98,8 @@ public class EnversRevisionMetadata<O extends Serializable> implements RevisionM
 			return Instant.ofEpochMilli((Long) timestamp);
 		}
 
-		if (Date.class.isInstance(timestamp)) {
-			return Date.class.cast(timestamp).toInstant();
+		if (timestamp instanceof Date) {
+			return ((Date) timestamp).toInstant();
 		}
 
 		throw new IllegalArgumentException(String.format("Can't convert %s to Instant!", timestamp));
