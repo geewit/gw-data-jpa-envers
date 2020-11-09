@@ -23,6 +23,7 @@ import java.util.Optional;
  *
  * @author Oliver Gierke
  * @author Philip Huegelmeyer
+ * @author geewit
  */
 public class EnversRevisionMetadata<O extends Serializable> implements RevisionMetadata<Integer> {
 

@@ -7,6 +7,7 @@ import org.springframework.data.repository.history.support.RevisionEntityInforma
  * {@link RevisionEntityInformation} for {@link org.hibernate.envers.DefaultRevisionEntity}.
  *
  * @author Oliver Gierke
+ * @author geewit
  */
 class EnversRevisionEntityInformation implements RevisionEntityInformation {
 

@@ -1,5 +1,6 @@
 package io.geewit.data.jpa.envers;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.envers.RevisionNumber;
 import org.hibernate.envers.RevisionTimestamp;
 
@@ -9,7 +10,7 @@ import java.util.Date;
 
 /**
  数据库变动日志
- @author gelif
+ @author geewit
  @since  2015-5-18
  */
 @MappedSuperclass
@@ -17,6 +18,7 @@ public abstract class EnversRevisionEntity<O extends Serializable> implements Se
     @RevisionNumber
     private Integer id;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08")
     @RevisionTimestamp
     private Date revisionTime;
 

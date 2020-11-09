@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
@@ -33,6 +34,7 @@ import org.springframework.util.Assert;
  * @author Oliver Gierke
  * @author Philipp Huegelmeyer
  * @author Michael Igler
+ * @author geewit
  */
 public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
         extends SimpleJpaRepository<T, ID> implements EnversRevisionRepository<T, ID, O> {
@@ -80,7 +82,7 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
         Number latestRevision = revisions.get(revisions.size() - 1);
 
         EnversRevisionEntity<O> revisionEntity = reader.findRevision(EnversRevisionEntity.class, latestRevision);
-        RevisionMetadata<Integer> metadata = getRevisionMetadata(revisionEntity);
+        RevisionMetadata<Integer> metadata = this.getRevisionMetadata(revisionEntity);
         return Optional.of(Revision.of(metadata, reader.find(type, id, latestRevision)));
     }
 
@@ -108,7 +110,7 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
         List<? extends Number> revisionNumbers = reader.getRevisions(type, id);
 
         return revisionNumbers.isEmpty() ? Revisions.none()
-                : getEntitiesForRevisions((List<Integer>) revisionNumbers, id, reader);
+                : this.getEntitiesForRevisions((List<Integer>) revisionNumbers, id, reader);
     }
 
     /**
@@ -129,13 +131,13 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
         }
         long offset = pageable.getOffset();
         if (offset > revisionNumbers.size()) {
-            return new PageImpl<>(Collections.<Revision<Integer, T>>emptyList(), pageable, 0);
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
 
         long upperBound = Math.min(revisionNumbers.size(), (offset + pageable.getPageSize()));
 
         List<? extends Number> subList = revisionNumbers.subList(Math.toIntExact(offset), Math.toIntExact(upperBound));
-        Revisions<Integer, T> revisions = getEntitiesForRevisions((List<Integer>) subList, id, reader);
+        Revisions<Integer, T> revisions = this.getEntitiesForRevisions((List<Integer>) subList, id, reader);
 
         revisions = isDescending ? revisions.reverse() : revisions;
 
@@ -147,7 +149,6 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
      * (non-Javadoc)
      * @see org.springframework.data.repository.history.RevisionRepository#findRevisions(Object, Pageable)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public Page<ComparedRevision<T, O>> findComparedRevisions(ID id, Pageable pageable) {
         Class<T> type = this.entityInformation.getJavaType();
@@ -161,7 +162,7 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
         long offset = pageable.getOffset();
         int revisionNumberSize = revisionNumbers.size();
         if (revisionNumberSize == 0 || offset > revisionNumbers.size()) {
-            return new PageImpl(Collections.emptyList(), pageable, 0L);
+            return new PageImpl<>(Collections.emptyList(), pageable, 0L);
         }
         long upperBound = Math.min(revisionNumberSize, offset + pageable.getPageSize());
         Number previousOfFirst = null;
@@ -170,7 +171,7 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
         }
         List<Number> subList = revisionNumbers.subList(Math.toIntExact(offset), Math.toIntExact(upperBound));
 
-        List<ComparedRevision<T, O>> comparedRevisions = getComparedEntitiesForRevisions(id, subList, previousOfFirst, reader);
+        List<ComparedRevision<T, O>> comparedRevisions = this.getComparedEntitiesForRevisions(id, subList, previousOfFirst, reader);
 
         return new PageImpl<>(comparedRevisions, pageable, revisionNumberSize);
     }
@@ -179,8 +180,7 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
     public T findRevisionByLastUpdateTime(ID id, Date updateTime) {
         Class<T> type = this.entityInformation.getJavaType();
         AuditReader reader = AuditReaderFactory.get(this.entityManager);
-        T revision = reader.find(type, id, updateTime);
-        return revision;
+        return reader.find(type, id, updateTime);
     }
 
     /**
@@ -195,15 +195,20 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
     private Revisions<Integer, T> getEntitiesForRevisions(Collection<Integer> revisionNumbers, ID id, AuditReader reader) {
 
         Class<T> type = entityInformation.getJavaType();
-        Map<Integer, T> revisions = new HashMap<>(revisionNumbers.size());
         Class<T> revisionEntityClass = (Class<T>) revisionEntityInformation.getRevisionEntityClass();
         Map<Number, T> revisionEntities = reader.findRevisions(revisionEntityClass, new HashSet<>(revisionNumbers));
 
-        for (Integer number : revisionNumbers) {
-            revisions.put(number, reader.find(type, id, number));
-        }
+        Map<Integer, T> revisions = revisionNumbers.stream()
+                .collect(
+                        Collectors.toMap(
+                                number -> number,
+                                number -> reader.find(type, id, number),
+                                (a, b) -> b,
+                                () -> new HashMap<>(revisionNumbers.size())
+                        )
+                );
 
-        return Revisions.of(toRevisions(revisions, revisionEntities));
+        return Revisions.of(this.toRevisions(revisions, revisionEntities));
     }
 
     /**
@@ -235,7 +240,7 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
                 previous = current;
             }
             current = reader.find(type, id, revisionNumbers.get(i));
-            EnversRevisionMetadata<O> metadata = (EnversRevisionMetadata<O>) getRevisionMetadata(revisionEntities.get(revisionNumbers.get(i)));
+            EnversRevisionMetadata<O> metadata = (EnversRevisionMetadata<O>) this.getRevisionMetadata(revisionEntities.get(revisionNumbers.get(i)));
             Instant updateJodaTime;
             if(metadata.getRevisionInstant().isPresent()) {
                 updateJodaTime = metadata.getRevisionInstant().get();
@@ -245,7 +250,7 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
 
             O operatorId = metadata.getOperatorId();
             String operatorName = metadata.getOperatorName();
-            ComparedRevision<T, O> comparedRevision = new ComparedRevision(current, previous, updateJodaTime, operatorId, operatorName);
+            ComparedRevision<T, O> comparedRevision = new ComparedRevision<>(current, previous, updateJodaTime, operatorId, operatorName);
             list.add(comparedRevision);
         }
         return list;
@@ -264,9 +269,9 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
     private Optional<Revision<Integer, T>> getEntityForRevision(Integer revisionNumber, ID id, AuditReader reader) {
 
 
-        EnversRevisionEntity revision = reader.findRevision(EnversRevisionEntity.class, revisionNumber);
+        EnversRevisionEntity<O> revision = reader.findRevision(EnversRevisionEntity.class, revisionNumber);
         T entity = reader.find(entityInformation.getJavaType(), id, revisionNumber);
-        return Optional.of(Revision.of(getRevisionMetadata(revision), entity));
+        return Optional.of(Revision.of(this.getRevisionMetadata(revision), entity));
     }
 
     @SuppressWarnings("unchecked")
@@ -278,7 +283,7 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
 
             Integer revisionNumber = revision.getKey();
             T entity = revision.getValue();
-            RevisionMetadata<Integer> metadata = getRevisionMetadata((EnversRevisionEntity) revisionEntities.get(revisionNumber));
+            RevisionMetadata<Integer> metadata = this.getRevisionMetadata((EnversRevisionEntity<O>) revisionEntities.get(revisionNumber));
             result.add(Revision.of(metadata, entity));
         }
 

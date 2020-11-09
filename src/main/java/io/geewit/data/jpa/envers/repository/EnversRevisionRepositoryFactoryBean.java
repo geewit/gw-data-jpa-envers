@@ -21,6 +21,7 @@ import org.springframework.data.repository.core.support.RepositoryFactorySupport
  *
  * @author Oliver Gierke
  * @author Michael Igler
+ * @author geewit
  */
 @SuppressWarnings({"unused"})
 public class EnversRevisionRepositoryFactoryBean<T extends EnversRevisionRepository<S, ID, O>, S, ID, O extends Serializable> extends JpaRepositoryFactoryBean<T, S, ID> {
