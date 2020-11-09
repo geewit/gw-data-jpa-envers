@@ -13,32 +13,31 @@ import java.util.Date;
  @author geewit
  @since  2015-5-18
  */
-@MappedSuperclass
 public abstract class EnversRevisionEntity<O extends Serializable> implements Serializable {
     @RevisionNumber
-    private Integer id;
+    protected O id;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08")
     @RevisionTimestamp
-    private Date revisionTime;
+    protected Date revisionTime;
 
+    /**
+     * @return 版本主键
+     */
     @SuppressWarnings({"unused"})
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", columnDefinition = "int")
-    public Integer getId() {
-        return id;
+    public O getId() {
+        return this.id;
     }
 
-    @SuppressWarnings({"unused"})
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
+    /**
+     * 版本主键
+     * @param id 版本主键
+     */
+    public abstract void setId(O id);
 
     @SuppressWarnings({"unused"})
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "revision_time", columnDefinition = "timestamp not null comment '版本保存时间'")
+    @Column(name = "revision_time")
     public Date getRevisionTime() {
         return revisionTime;
     }
