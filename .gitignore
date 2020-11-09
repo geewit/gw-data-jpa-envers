@@ -7,3 +7,13 @@ target/
 /*.iml
 /.gradle
 /out
+/domain/*.iml
+/domain/logs
+/domain/target
+/domain/out
+/domain/.gradle
+/repository/*.iml
+/repository/logs
+/repository/target
+/repository/out
+/repository/.gradle

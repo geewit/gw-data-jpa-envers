@@ -1,0 +1,21 @@
+project(':repository') {
+    dependencies {
+        compile(project(":domain"))
+        compile("com.fasterxml.jackson.core:jackson-annotations:$jackson_version")
+        compile("org.hibernate:hibernate-envers:$hibernate_version")
+        compile("org.slf4j:slf4j-api:$slf4j_version") {
+            exclude group: 'org.slf4j', module: 'logback'
+        }
+        compile("org.springframework:spring-beans:$spring_version")
+        compile("org.springframework:spring-context:$spring_version")
+        compile("org.springframework:spring-context-support:$spring_version")
+        compile("org.springframework:spring-core:$spring_version")
+        compile("org.springframework:spring-jdbc:$spring_version")
+        compile("org.springframework:spring-orm:$spring_version")
+        compile("org.springframework:spring-tx:$spring_version")
+        compile("org.springframework.data:spring-data-commons:$spring_data_version")
+        compile("org.springframework.data:spring-data-jpa:$spring_data_version")
+    }
+
+}
+
