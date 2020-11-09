@@ -24,6 +24,7 @@ public abstract class EnversRevisionEntity<O extends Serializable> implements Se
     /**
      * @return 版本主键
      */
+    @Transient
     @SuppressWarnings({"unused"})
     public O getId() {
         return this.id;
@@ -33,29 +34,44 @@ public abstract class EnversRevisionEntity<O extends Serializable> implements Se
      * 版本主键
      * @param id 版本主键
      */
+    @SuppressWarnings({"unused"})
     public abstract void setId(O id);
 
+    @Transient
     @SuppressWarnings({"unused"})
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "revision_time")
     public Date getRevisionTime() {
         return revisionTime;
     }
 
+    /**
+     * 版本时间
+     * @param revisionTime 版本时间
+     */
     @SuppressWarnings({"unused"})
-    public void setRevisionTime(Date revisionTime) {
-        this.revisionTime = revisionTime;
-    }
+    public abstract void setRevisionTime(Date revisionTime);
 
+    /**
+     * @return 操作人id
+     */
     @Transient
     public abstract O getOperatorId();
 
+    /**
+     * @param operatorId 操作人id
+     */
     @SuppressWarnings({"unused"})
     public abstract void setOperatorId(O operatorId);
 
+    /**
+     * 操作人名
+     */
     @Transient
     public abstract String getOperatorName();
 
+    /**
+     * 操作人名
+     * @param operatorName 操作人名
+     */
     @SuppressWarnings({"unused"})
     public abstract void setOperatorName(String operatorName);
 }
