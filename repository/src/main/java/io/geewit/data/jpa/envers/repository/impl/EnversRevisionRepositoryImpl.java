@@ -154,11 +154,6 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
         Class<T> type = this.entityInformation.getJavaType();
         AuditReader reader = AuditReaderFactory.get(this.entityManager);
         List<Number> revisionNumbers = reader.getRevisions(type, id);
-        boolean isDescending = RevisionSort.getRevisionDirection(pageable.getSort()).isDescending();
-
-        if (isDescending) {
-            Collections.reverse(revisionNumbers);
-        }
         long offset = pageable.getOffset();
         int revisionNumberSize = revisionNumbers.size();
         if (revisionNumberSize == 0 || offset > revisionNumbers.size()) {
@@ -166,12 +161,16 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
         }
         long upperBound = Math.min(revisionNumberSize, offset + pageable.getPageSize());
         Number previousOfFirst = null;
+        boolean isDescending = RevisionSort.getRevisionDirection(pageable.getSort()).isDescending();
+        if (isDescending) {
+            Collections.reverse(revisionNumbers);
+        }
         if (offset > 0) {
             previousOfFirst = revisionNumbers.get(Math.toIntExact(offset - 1));
         }
         List<Number> subList = revisionNumbers.subList(Math.toIntExact(offset), Math.toIntExact(upperBound));
 
-        List<ComparedRevision<T, O>> comparedRevisions = this.getComparedEntitiesForRevisions(id, subList, previousOfFirst, reader);
+        List<ComparedRevision<T, O>> comparedRevisions = this.getComparedEntitiesForRevisions(id, subList, previousOfFirst, isDescending, reader);
 
         return new PageImpl<>(comparedRevisions, pageable, revisionNumberSize);
     }
@@ -219,7 +218,10 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
      * @return
      */
     @SuppressWarnings("unchecked")
-    private List<ComparedRevision<T, O>> getComparedEntitiesForRevisions(ID id, List<Number> revisionNumbers, Number previousOfFirst, AuditReader reader) {
+    private List<ComparedRevision<T, O>> getComparedEntitiesForRevisions(ID id, List<Number> revisionNumbers, Number previousOfFirst, boolean isDescending, AuditReader reader) {
+        if(isDescending) {
+            revisionNumbers.sort(Comparator.comparingLong(Number::longValue));
+        }
         Class<T> type = this.entityInformation.getJavaType();
         List<ComparedRevision<T, O>> list = new ArrayList<>(revisionNumbers.size());
 
@@ -252,6 +254,9 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
             String operatorName = metadata.getOperatorName();
             ComparedRevision<T, O> comparedRevision = new ComparedRevision<>(current, previous, updateJodaTime, operatorId, operatorName);
             list.add(comparedRevision);
+        }
+        if (isDescending) {
+            Collections.reverse(list);
         }
         return list;
     }
