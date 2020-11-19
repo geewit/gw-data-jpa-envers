@@ -241,7 +241,9 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
             } else {
                 previous = current;
             }
-            current = reader.find(type, id, revisionNumbers.get(i));
+            Number revision = revisionNumbers.get(i);
+
+            current = reader.find(type, id, revision);
             EnversRevisionMetadata<O> metadata = (EnversRevisionMetadata<O>) this.getRevisionMetadata(revisionEntities.get(revisionNumbers.get(i)));
             Instant updateJodaTime;
             if(metadata.getRevisionInstant().isPresent()) {
@@ -252,7 +254,7 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
 
             O operatorId = metadata.getOperatorId();
             String operatorName = metadata.getOperatorName();
-            ComparedRevision<T, O> comparedRevision = new ComparedRevision<>(current, previous, updateJodaTime, operatorId, operatorName);
+            ComparedRevision<T, O> comparedRevision = new ComparedRevision<>(revision, current, previous, updateJodaTime, operatorId, operatorName);
             list.add(comparedRevision);
         }
         if (isDescending) {

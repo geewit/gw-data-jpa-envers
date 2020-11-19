@@ -11,13 +11,16 @@ import java.time.Instant;
  * @since  2017-05-26
  */
 public class ComparedRevision<T, O> implements Serializable {
-    public ComparedRevision(T current, T previous, Instant updateTime, O operatorId, String operatorName) {
+    public ComparedRevision(Number revision, T current, T previous, Instant updateTime, O operatorId, String operatorName) {
+        this.revision = revision;
         this.current = current;
         this.previous = previous;
         this.updateTime = updateTime;
         this.operatorId = operatorId;
         this.operatorName = operatorName;
     }
+
+    private Number revision;
 
     private T current;
 
@@ -29,6 +32,14 @@ public class ComparedRevision<T, O> implements Serializable {
     private O operatorId;
 
     private String operatorName;
+
+    public Number getRevision() {
+        return revision;
+    }
+
+    public void setRevision(Number revision) {
+        this.revision = revision;
+    }
 
     @SuppressWarnings({"unused"})
     public T getCurrent() {

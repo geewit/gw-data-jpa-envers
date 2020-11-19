@@ -15,7 +15,7 @@ import java.util.Date;
  */
 public abstract class EnversRevisionEntity<O extends Serializable> implements Serializable {
     @RevisionNumber
-    protected O id;
+    protected Long id;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08")
     @RevisionTimestamp
@@ -26,7 +26,7 @@ public abstract class EnversRevisionEntity<O extends Serializable> implements Se
      */
     @Transient
     @SuppressWarnings({"unused"})
-    public O getId() {
+    public Long getId() {
         return this.id;
     }
 
@@ -35,7 +35,7 @@ public abstract class EnversRevisionEntity<O extends Serializable> implements Se
      * @param id 版本主键
      */
     @SuppressWarnings({"unused"})
-    public abstract void setId(O id);
+    public abstract void setId(Long id);
 
     @Transient
     @SuppressWarnings({"unused"})
