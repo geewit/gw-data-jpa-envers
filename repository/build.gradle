@@ -1,6 +1,7 @@
 project(':repository') {
     dependencies {
         compile(project(":domain"))
+        compile("io.geewit.data:gw-data-jpa-essential:$gw_data_jpa_essential_version")
         compile("com.fasterxml.jackson.core:jackson-annotations:$jackson_version")
         compile("org.hibernate:hibernate-envers:$hibernate_version")
         compile("org.slf4j:slf4j-api:$slf4j_version") {

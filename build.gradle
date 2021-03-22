@@ -12,6 +12,19 @@ task publish {
 publish.dependsOn(":domain:publish")
 publish.dependsOn(":repository:publish")
 
+
+task publishToMavenLocal {
+    doFirst {
+        println 'run publishToMavenLocal start'
+    }
+    doLast {
+        println 'run publishToMavenLocal complete'
+    }
+}
+
+publishToMavenLocal.dependsOn(":domain:publishToMavenLocal")
+publishToMavenLocal.dependsOn(":repository:publishToMavenLocal")
+
 task clean {
     doFirst {
         println 'run clean start'
