@@ -35,7 +35,9 @@ public abstract class EnversRevisionEntity<O extends Serializable> implements Se
      * @param id 版本主键
      */
     @SuppressWarnings({"unused"})
-    public abstract void setId(Long id);
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     @Transient
     @SuppressWarnings({"unused"})
@@ -48,7 +50,9 @@ public abstract class EnversRevisionEntity<O extends Serializable> implements Se
      * @param revisionTime 版本时间
      */
     @SuppressWarnings({"unused"})
-    public abstract void setRevisionTime(Date revisionTime);
+    public void setRevisionTime(Date revisionTime) {
+        this.revisionTime = revisionTime;
+    }
 
     /**
      * @return 操作人id

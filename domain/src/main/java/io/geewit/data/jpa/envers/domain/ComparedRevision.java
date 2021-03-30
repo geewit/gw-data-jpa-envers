@@ -10,7 +10,7 @@ import java.time.Instant;
  * @author geewit
  * @since  2017-05-26
  */
-public class ComparedRevision<T, O> implements Serializable {
+public class ComparedRevision<T, O> implements Comparable<ComparedRevision<T, O>>, Serializable {
     public ComparedRevision(Number revision, T current, T previous, Instant updateTime, O operatorId, String operatorName) {
         this.revision = revision;
         this.current = current;
@@ -89,5 +89,22 @@ public class ComparedRevision<T, O> implements Serializable {
     @SuppressWarnings({"unused"})
     public void setOperatorName(String operatorName) {
         this.operatorName = operatorName;
+    }
+
+    @Override
+    public int compareTo(ComparedRevision<T, O> that) {
+        if(this.revision != null && that.revision == null) {
+            return 1;
+        }
+        if(this.revision == null && that.revision != null) {
+            return -1;
+        }
+        if(this.revision == null) {
+            return 0;
+        }
+        if(this.revision.longValue() == that.getRevision().longValue()) {
+            return 0;
+        }
+        return this.revision.longValue() > that.getRevision().longValue() ? 1 : -1;
     }
 }
