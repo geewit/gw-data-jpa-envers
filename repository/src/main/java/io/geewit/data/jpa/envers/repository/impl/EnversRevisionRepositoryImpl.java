@@ -146,7 +146,10 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
 
 
     /**
-     * (non-Javadoc)
+     * 查找特定主键id的分页审计列表
+     * @param id 主键id
+     * @param pageable 分页
+     * @return 分页审计列表
      * @see org.springframework.data.repository.history.RevisionRepository#findRevisions(Object, Pageable)
      */
     @Override
@@ -175,6 +178,12 @@ public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
         return new PageImpl<>(comparedRevisions, pageable, revisionNumberSize);
     }
 
+    /**
+     * 查找特定主键id指定时间前最后一个版本
+     * @param id 主键id
+     * @param updateTime 指定时间
+     * @return 最后一个版本
+     */
     @Override
     public T findRevisionByLastUpdateTime(ID id, Date updateTime) {
         Class<T> type = this.entityInformation.getJavaType();

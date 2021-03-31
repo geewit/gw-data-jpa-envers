@@ -86,7 +86,6 @@ public class EnversRevisionMetadata<O extends Serializable> implements RevisionM
 	}
 
 	private static Instant convertToInstant(Object timestamp) {
-
 		if (timestamp instanceof Instant) {
 			return (Instant) timestamp;
 		}

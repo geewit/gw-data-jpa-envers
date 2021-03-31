@@ -42,7 +42,7 @@ public class RevisionRepositoryFactory<T, ID, O extends Serializable> extends Jp
     protected EnversRevisionRepositoryImpl<T, ID, O> getTargetRepository(RepositoryInformation information,
                                                                          EntityManager entityManager) {
 
-        JpaEntityInformation<T, ID> entityInformation = (JpaEntityInformation<T, ID>) getEntityInformation(information.getDomainType());
+        JpaEntityInformation<T, ID> entityInformation = (JpaEntityInformation<T, ID>) super.getEntityInformation(information.getDomainType());
 
         return new EnversRevisionRepositoryImpl<>(entityInformation, revisionEntityInformation, entityManager);
     }
