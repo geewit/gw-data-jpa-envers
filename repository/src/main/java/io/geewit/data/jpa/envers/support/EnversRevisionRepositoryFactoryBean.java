@@ -1,12 +1,12 @@
-package io.geewit.data.jpa.envers.repository;
-
-import java.io.Serializable;
+package io.geewit.data.jpa.envers.support;
 
 import javax.persistence.EntityManager;
-
+import io.geewit.data.jpa.envers.repository.EnversRevisionRepository;
+import io.geewit.data.jpa.essential.repository.support.EntityGraphJpaRepositoryFactoryBean;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
+
+import java.io.Serializable;
 
 
 /**
@@ -17,7 +17,7 @@ import org.springframework.data.repository.core.support.RepositoryFactorySupport
  * @author geewit
  */
 @SuppressWarnings({"unused"})
-public class EnversRevisionRepositoryFactoryBean<T extends EnversRevisionRepository<S, ID, O>, S, ID, O extends Serializable> extends JpaRepositoryFactoryBean<T, S, ID> {
+public class EnversRevisionRepositoryFactoryBean<T extends EnversRevisionRepository<S, ID, O>, S, ID extends Serializable, O extends Serializable> extends EntityGraphJpaRepositoryFactoryBean<T, S, ID> {
 
 	/**
 	 * Creates a new {@link EnversRevisionRepositoryFactoryBean} for the given repository interface.
@@ -34,7 +34,7 @@ public class EnversRevisionRepositoryFactoryBean<T extends EnversRevisionReposit
 	 */
 	@Override
 	protected RepositoryFactorySupport createRepositoryFactory(EntityManager entityManager) {
-		return new RevisionRepositoryFactory<>(entityManager);
+		return new RevisionRepositoryFactory(entityManager);
 	}
 
 }

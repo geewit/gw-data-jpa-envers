@@ -12,7 +12,7 @@ import io.geewit.data.jpa.envers.EnversRevisionEntity;
 import io.geewit.data.jpa.envers.domain.ComparedRevision;
 import io.geewit.data.jpa.envers.repository.EnversRevisionMetadata;
 import io.geewit.data.jpa.envers.repository.EnversRevisionRepository;
-import io.geewit.data.jpa.essential.repository.impl.SimpleJpaBatchRepository;
+import io.geewit.data.jpa.essential.repository.impl.EntityGraphSimpleJpaRepository;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.springframework.data.domain.Page;
@@ -36,8 +36,8 @@ import org.springframework.util.Assert;
  * @author Michael Igler
  * @author geewit
  */
-public class EnversRevisionRepositoryImpl<T, ID, O extends Serializable>
-        extends SimpleJpaBatchRepository<T, ID> implements EnversRevisionRepository<T, ID, O> {
+public class EnversRevisionRepositoryImpl<T, ID extends Serializable, O extends Serializable>
+        extends EntityGraphSimpleJpaRepository<T, ID> implements EnversRevisionRepository<T, ID, O> {
 
     private final EntityInformation<T, ID> entityInformation;
     private final RevisionEntityInformation revisionEntityInformation;

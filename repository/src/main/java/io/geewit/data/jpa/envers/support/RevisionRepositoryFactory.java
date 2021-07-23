@@ -1,7 +1,8 @@
-package io.geewit.data.jpa.envers.repository;
+package io.geewit.data.jpa.envers.support;
 
+import io.geewit.data.jpa.envers.repository.EnversRevisionRepository;
 import io.geewit.data.jpa.envers.repository.impl.EnversRevisionRepositoryImpl;
-import io.geewit.data.jpa.essential.repository.JpaBatchRepositoryFactory;
+import io.geewit.data.jpa.essential.repository.support.EntityGraphJpaRepositoryFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
@@ -10,14 +11,13 @@ import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryComposition;
 
 import javax.persistence.EntityManager;
-import java.io.Serializable;
 
 /**
  * Repository factory creating {@link EnversRevisionRepository} instances.
  *
  * @author geewit
  */
-public class RevisionRepositoryFactory<T, ID, O extends Serializable> extends JpaBatchRepositoryFactory<T, ID> {
+public class RevisionRepositoryFactory extends EntityGraphJpaRepositoryFactory {
 
     private final EnversRevisionEntityInformation revisionEntityInformation;
 
@@ -39,10 +39,10 @@ public class RevisionRepositoryFactory<T, ID, O extends Serializable> extends Jp
      * @return
      */
     @Override
-    protected EnversRevisionRepositoryImpl<T, ID, O> getTargetRepository(RepositoryInformation information,
+    protected EnversRevisionRepositoryImpl getTargetRepository(RepositoryInformation information,
                                                                          EntityManager entityManager) {
 
-        JpaEntityInformation<T, ID> entityInformation = (JpaEntityInformation<T, ID>) super.getEntityInformation(information.getDomainType());
+        JpaEntityInformation entityInformation = super.getEntityInformation(information.getDomainType());
 
         return new EnversRevisionRepositoryImpl<>(entityInformation, revisionEntityInformation, entityManager);
     }

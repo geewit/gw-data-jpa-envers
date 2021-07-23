@@ -1,4 +1,4 @@
-package io.geewit.data.jpa.envers.repository;
+package io.geewit.data.jpa.envers.support;
 
 import io.geewit.data.jpa.envers.EnversRevisionEntity;
 import org.springframework.data.repository.history.support.RevisionEntityInformation;

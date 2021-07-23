@@ -1,5 +1,5 @@
 project(':domain') {
     dependencies {
-        compile("com.fasterxml.jackson.core:jackson-annotations:$jackson_version")
+        api("com.fasterxml.jackson.core:jackson-annotations:$jackson_version")
     }
 }
